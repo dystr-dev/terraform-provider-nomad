@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"sort"
 	"strconv"
@@ -317,6 +318,15 @@ func resourceJobRegister(d *schema.ResourceData, meta interface{}) error {
 	if job.Namespace == nil || *job.Namespace == "" {
 		defaultNamespace := "default"
 		job.Namespace = &defaultNamespace
+	}
+
+	// Parse the Consul token
+	if job.ConsulToken == nil || *job.ConsulToken == "" {
+		consulToken := os.Getenv("CONSUL_HTTP_TOKEN")
+
+		if consulToken != "" {
+			job.ConsulToken = &consulToken
+		}
 	}
 
 	// Register the job
